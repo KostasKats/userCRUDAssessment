@@ -2,24 +2,22 @@ package com.vodafone.rest.webservices.restfulwebservices;
 
 
 import com.vodafone.rest.webservices.restfulwebservices.controller.UserRestController;
-import com.vodafone.rest.webservices.restfulwebservices.jpa.UserInfosDaoService;
+import com.vodafone.rest.webservices.restfulwebservices.dto.UserDto;
+import com.vodafone.rest.webservices.restfulwebservices.jpa.UserRepository;
 import com.vodafone.rest.webservices.restfulwebservices.user.User;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.MockMvc;
-
-
 import java.util.*;
-
+import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -29,13 +27,14 @@ import static org.mockito.Mockito.*;
 public class UserControllerTests {
 
     @Mock
-    private UserInfosDaoService userRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private UserRestController userController;
 
-    @Autowired
-    private MockMvc mockMvc;
+
+    @Mock
+    private ModelMapper mapper;
 
 
     @Test
@@ -44,12 +43,14 @@ public class UserControllerTests {
 
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
 
-        ResponseEntity<User> response = userController.addUser(user);
+        UserDto userDto = mapper.map(user,UserDto.class);
 
-        Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assert.assertEquals(user, response.getBody());
+        ResponseEntity<UserDto> response = userController.addUser(userDto);
 
-        Mockito.verify(userRepository, times(1)).save(user);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(userDto, response.getBody());
+
     }
 
 
@@ -62,11 +63,14 @@ public class UserControllerTests {
 
         when(userRepository.saveAll(users)).thenReturn(users);
 
-        ResponseEntity<User> response = userController.addUsers(users);
+        List<UserDto> userDtos = users.stream()
+                .map(user -> mapper.map(user, UserDto.class))
+                .collect(Collectors.toList());
+
+        ResponseEntity<List<UserDto>> response = userController.addUsers(userDtos);
         HttpStatusCode status = response.getStatusCode();
 
-        assertEquals(HttpStatus.OK, status);
-        verify(userRepository, times(1)).saveAll(users);
+        assertEquals(HttpStatus.CREATED, status);
     }
 
     @Test
@@ -78,10 +82,15 @@ public class UserControllerTests {
 
         when(userRepository.findAll()).thenReturn(users);
 
-        List<User> response = userController.findUsers();
+    List<UserDto> userDtos = users.stream()
+            .map(user -> mapper.map(user, UserDto.class))
+            .collect(Collectors.toList());
 
-        assertEquals(users.size(), response.size());
-        assertEquals(users, response);
+
+        List<UserDto> response = userController.findUsers();
+
+        assertEquals(userDtos.size(), response.size());
+        assertEquals(userDtos, response);
         verify(userRepository, times(1)).findAll();
     }
 
@@ -91,10 +100,10 @@ public class UserControllerTests {
 
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
-        ResponseEntity<User> response = userController.findUserById(1);
+        ResponseEntity<UserDto> response = userController.findUserById(1);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(user, response.getBody());
+        assertEquals(mapper.map(user,UserDto.class), response.getBody());
         verify(userRepository, times(1)).findById(1);
     }
 
@@ -105,8 +114,7 @@ public class UserControllerTests {
 
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
-        ResponseEntity<User> response = userController.deleteUser(1);
-        verify(userRepository, times(1)).delete(user);
+        ResponseEntity<UserDto> response = userController.deleteUser(1);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -114,8 +122,8 @@ public class UserControllerTests {
     void testDeleteUsers() {
         List<Integer> ids = Arrays.asList(1, 2, 3);
 
-        UserInfosDaoService userInfosDaoService = Mockito.mock(UserInfosDaoService.class);
-        Mockito.when(userInfosDaoService.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+        UserRepository userRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
 
 
         ResponseEntity<List<Integer>> response = userController.deleteUsers(new ArrayList<>(ids));
@@ -123,7 +131,7 @@ public class UserControllerTests {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals(ids, response.getBody());
 
-        Mockito.verify(userInfosDaoService, Mockito.never()).delete(Mockito.any(User.class));
+        Mockito.verify(userRepository, Mockito.never()).delete(Mockito.any(User.class));
     }
 
     @Test
@@ -151,22 +159,25 @@ public class UserControllerTests {
     void updateUserValidUserReturnsOkResponse() {
         User updatedUser = new User(1, "kkatsaros", "kkatsaros@example.com", "kostas", "katsaros");
 
-        ResponseEntity<User> response = userController.updateUser(updatedUser);
-        verify(userRepository, times(1)).save(updatedUser);
+        UserDto userDto = mapper.map(updatedUser,UserDto.class);
+        ResponseEntity<UserDto> response = userController.updateUser(userDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedUser, response.getBody());
+        assertEquals(userDto, response.getBody());
     }
 
     @Test
-    void updateUsers_ValidUsers_ReturnsOkResponse() {
+    void updateUsersValidUsersReturnsOkResponse() {
         // Arrange
         List<User> users = Arrays.asList(
                 new User(1, "user1", "user1@example.com", "User 1", "Lastname"),
                 new User(2, "user2", "user2@example.com", "User 2", "Lastname")
         );
-        ResponseEntity<User> response = userController.updateUsers(users);
+        List<UserDto> userDtos = users.stream()
+                .map(user -> mapper.map(user, UserDto.class))
+                .collect(Collectors.toList());
 
-        verify(userRepository, times(1)).saveAll(users);
+        ResponseEntity<UserDto> response = userController.updateUsers(userDtos);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNull(response.getBody());
     }
