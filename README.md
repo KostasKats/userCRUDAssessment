@@ -28,19 +28,24 @@ This repository contains a Spring Boot Application, that implements a REST API f
 ### Installation
 
 1. Clone the repository:
+
 https://github.com/KostasKats/userCRUDAssessment.git
 
 2. Build the project using Maven:
-  mvn clean install
+
+```shell
+mvn clean install
+```
+
 
 3. Run the microservice:
+
+```shell
   mvn spring-boot:run
+ ```
 
 
-
-
-
-The microservice will start running on the default port `8080`.
+The service will start running on the default port `8080`.
 
 ## API Documentation
 
