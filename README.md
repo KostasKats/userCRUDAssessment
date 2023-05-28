@@ -29,7 +29,7 @@ This repository contains a Spring Boot Application, that implements a REST API f
 
 1. Clone the repository:
 
-https://github.com/KostasKats/userCRUDAssessment.git
+`https://github.com/KostasKats/userCRUDAssessment.git`
 
 2. Build the project using Maven:
 
@@ -37,13 +37,11 @@ https://github.com/KostasKats/userCRUDAssessment.git
 mvn clean install
 ```
 
-
-3. Run the microservice:
+3. Run the API:
 
 ```shell
   mvn spring-boot:run
  ```
-
 
 The service will start running on the default port `8080`.
 
