@@ -40,14 +40,19 @@ mvn clean install
 3. Run the API:
 
 ```shell
-  mvn spring-boot:run
+ mvn spring-boot:run
  ```
 
 The service will start running on the default port `8080`.
 
+H2 console on: `http://localhost:8080/h2-console/login.jsp?jsessionid=6d025439382c1ab410d1118a5e38f29d`
+using JDBC URL: `jdbc:h2:mem:testdb`
+
 ## API Documentation
 
 The API documentation is available at `http://localhost:8080/swagger-ui.html` when the service is running. You can explore and test the API endpoints using Swagger UI.
+
+
 
 
 
