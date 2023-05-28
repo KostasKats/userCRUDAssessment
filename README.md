@@ -45,7 +45,7 @@ mvn clean install
 
 The service will start running on the default port `8080`.
 
-H2 console on: `http://localhost:8080/h2-console/login.jsp?jsessionid=6d025439382c1ab410d1118a5e38f29d`
+H2 console on: `http://localhost:8080/h2-console`
 
 using JDBC URL: `jdbc:h2:mem:testdb`
 
