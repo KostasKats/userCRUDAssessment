@@ -40,7 +40,7 @@ mvn clean install
 3. Run the API:
 
 ```shell
-  java -jar restful-web-services-0.0.1-SNAPSHOT.jar
+ java -jar restful-web-services-0.0.1-SNAPSHOT.jar
  ```
 
 The service will start running on the default port `8080`.
