@@ -40,14 +40,14 @@ mvn clean install
 3. Run the API:
 
 ```shell
- mvn spring-boot:run
+  java -jar restful-web-services-0.0.1-SNAPSHOT.jar
  ```
 
 The service will start running on the default port `8080`.
 
 H2 console on: `http://localhost:8080/h2-console`
 
-using JDBC URL: `jdbc:h2:mem:testdb`
+JDBC URL: `jdbc:h2:mem:testdb`
 
 ## API Documentation
 
