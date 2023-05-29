@@ -11,13 +11,12 @@ import lombok.*;
 
 @Entity(name="user_infos")
 @Data
-@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Integer id;
 
     @NotBlank(message = "Username cannot be null")
