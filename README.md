@@ -42,7 +42,10 @@ mvn clean install
 ```shell
  java -jar restful-web-services-0.0.1-SNAPSHOT.jar
  ```
-
+Or run it as Docker container:
+```shell
+docker run -p 8080:8080 -d kostaskats/user:latest
+```
 The service will start running on the default port `8080`.
 
 H2 console on: `http://localhost:8080/h2-console`
